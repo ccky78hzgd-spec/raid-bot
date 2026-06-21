@@ -1,6 +1,13 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 const cron = require("node-cron");
+const express = require("express");
+const app = express();
 
+app.get("/", (req, res) => {
+  res.send("Bot is alive");
+});
+
+app.listen(process.env.PORT || 3000);
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,

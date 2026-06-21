@@ -9,8 +9,10 @@ const client = new Client({
   ]
 });
 
+// 🧠 YOUR SERVER
 const GUILD_ID = "1517293432366825713";
 
+// 🕒 CHANNEL SCHEDULES
 const schedules = [
   {
     channelId: "1518018887122292878", // #16
@@ -29,17 +31,17 @@ const schedules = [
   }
 ];
 
+// ⏰ TIME FUNCTION (UK server time of host machine)
 function getTime() {
-  return new Date().toTimeString().slice(0, 5); // HH:MM (UK system time)
+  return new Date().toTimeString().slice(0, 5);
 }
 
-// Prevent duplicate triggers
-const lastRun = {};
-
+// 🚀 BOT READY
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
 
+// 🔁 CHECK EVERY MINUTE
 cron.schedule("* * * * *", async () => {
   const now = getTime();
 
@@ -50,30 +52,25 @@ cron.schedule("* * * * *", async () => {
     const channel = await guild.channels.fetch(rule.channelId).catch(() => null);
     if (!channel) continue;
 
-    // 🔓 OPEN
-    if (now === rule.open && lastRun[rule.channelId + "open"] !== now) {
-      lastRun[rule.channelId + "open"] = now;
-
+    // 🔓 OPEN CHANNEL
+    if (now === rule.open) {
       await channel.permissionOverwrites.edit(guild.roles.everyone, {
         SendMessages: true
       });
 
-      console.log(`OPENED channel ${rule.channelId} at ${now}`);
+      console.log(`OPENED ${rule.channelId} at ${now}`);
     }
 
-    // 🔒 CLOSE
-    if (now === rule.close && lastRun[rule.channelId + "close"] !== now) {
-      lastRun[rule.channelId + "close"] = now;
-
+    // 🔒 CLOSE CHANNEL
+    if (now === rule.close) {
       await channel.permissionOverwrites.edit(guild.roles.everyone, {
         SendMessages: false
       });
 
-      console.log(`CLOSED channel ${rule.channelId} at ${now}`);
+      console.log(`CLOSED ${rule.channelId} at ${now}`);
     }
   }
 });
 
-// 🔑 PUT YOUR BOT TOKEN HERE
-client.login("MTUxNzk5OTI4OTM1NDI4OTIxMg.GKacod.ffRW0osy1QOIbh5EcxvIZEp8YltUvjLr3sVVVE");
-
+// 🔑 LOGIN (IMPORTANT FOR RENDER)
+client.login(process.env.DISCORD_TOKEN);
